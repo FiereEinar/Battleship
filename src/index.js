@@ -4,12 +4,14 @@ import './styles/style.css';
 import Gameboard from './models/gameBoard.js';
 import Ship from './models/ship.js';
 
-const myShip = new Ship(2, [
-    [2, 3],
-    [2, 4],
-]);
+const myShip = new Ship('carrier', 4);
 const myBoard = new Gameboard();
-myBoard.placeShip(myShip.getPosition());
-
-console.log(myShip.getPosition());
+const coord = [
+    [4, 5],
+    [3, 5],
+    [2, 5],
+    [1, 5],
+];
+myBoard.placeShip(coord, myShip);
+myBoard.receiveAttack(4, 5);
 console.log(myBoard.board);
