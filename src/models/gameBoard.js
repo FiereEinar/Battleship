@@ -20,6 +20,14 @@ export default class Gameboard {
         return newBoard;
     }
 
+    getShips() {
+        return this.aliveShips;
+    }
+
+    getBoard() {
+        return this.board;
+    }
+
     // TODO: add a checker if the given coordinate is already occupied
 
     placeShip(coords, ship) {

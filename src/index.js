@@ -7,8 +7,8 @@ import Ship from './models/ship.js';
 import Computer from './models/computer.js';
 import PersonPlayer from './models/person.js';
 
-const person = new PersonPlayer('Nick');
-const computer = new PersonPlayer();
+const person = new PersonPlayer();
+const computer = new Computer();
 
 const myShip = new Ship('carrier', 4);
 const myBoard = new Gameboard();
@@ -20,4 +20,4 @@ const coord = [
 ];
 myBoard.placeShip(coord, myShip);
 myBoard.receiveAttack(4, 5);
-console.log(myBoard.board);
+// console.log(myBoard.board);
