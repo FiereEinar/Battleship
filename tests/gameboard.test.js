@@ -1,5 +1,5 @@
-import Gameboard from '../src/models/gameBoard';
-import Ship from '../src/models/ship';
+import Gameboard from '../src/models/gameBoard.js';
+import Ship from '../src/models/ship.js';
 
 describe('Gameboard functionalities', () => {
     test('Correct board size', () => {
@@ -26,12 +26,56 @@ describe('Gameboard functionalities', () => {
         expect(myBoard.board[1][5].getShip()).toEqual('carrier');
     });
 
-    // test('Reject ship placement if already occupied', () => {
-    //     const myBoard = new Gameboard();
-    //     myBoard.placeShip([
-    //         [2, 3],
-    //         [2, 4],
-    //     ]);
-    //     expect(myBoard.receiveAttack([2, 3])).toEqual(true);
-    // });
+    test('Receive an attack and calls hit() to the targetted ship', () => {
+        const myBoard = new Gameboard();
+        const myShip = new Ship('carrier', 4);
+        myBoard.placeShip(
+            [
+                [4, 5],
+                [3, 5],
+                [2, 5],
+                [1, 5],
+            ],
+            myShip,
+        );
+        myBoard.receiveAttack(4, 5);
+        expect(myShip.getHits()).toEqual(1);
+    });
+
+    test('Records miss attacks', () => {
+        const myBoard = new Gameboard();
+        myBoard.receiveAttack(6, 7);
+        expect(myBoard.board[6][7].getDiscovered()).toEqual(true);
+    });
+
+    test('Report if all ships are sunk', () => {
+        const myBoard = new Gameboard();
+        const myShip = new Ship('destroyer', 2);
+        myBoard.placeShip(
+            [
+                [3, 4],
+                [2, 4],
+            ],
+            myShip,
+        );
+
+        myBoard.receiveAttack(3, 4);
+        myBoard.receiveAttack(2, 4);
+        expect(myBoard.isAllShipSunk()).toEqual(true);
+    });
+
+    test('Report if all ships are NOT sunk', () => {
+        const myBoard = new Gameboard();
+        const myShip = new Ship('destroyer', 2);
+        myBoard.placeShip(
+            [
+                [3, 4],
+                [2, 4],
+            ],
+            myShip,
+        );
+
+        myBoard.receiveAttack(2, 4);
+        expect(myBoard.isAllShipSunk()).toEqual(false);
+    });
 });

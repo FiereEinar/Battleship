@@ -14,6 +14,10 @@ export default class Ship {
         return this.shipLength;
     }
 
+    getHits() {
+        return this.numberOfHits;
+    }
+
     hit() {
         this.numberOfHits += 1;
         if (this.numberOfHits === this.shipLength) this.sunk = true;

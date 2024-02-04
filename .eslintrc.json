@@ -15,6 +15,7 @@
         "import/no-unresolved": "off",
         "import/extensions": "off",
         "one-var": "off",
+        "no-useless-constructor": "off",
         "import/prefer-default-export": "off"
         // "import/no-extraneous-dependencies": [
         //     "error",
@@ -28,32 +29,3 @@
         "node": true
     }
 }
-
-// {
-//     "extends": ["airbnb-base", "prettier"],
-//     "plugins": ["prettier"],
-//     "rules": {
-//         "prettier/prettier": [
-//             "error",
-//             {
-//                 "endOfLine": "auto",
-//                 "singleQuote": true,
-//                 "tabWidth": 4
-//             },
-//             {
-//                 "usePrettierrc": false
-//             }
-//         ],
-//         // "semi": ["warn", "always"],
-//         // "quotes": ["warn", "single"],
-//         "linebreak-style": 0,
-//         "no-console": "off",
-//         "no-mixed-spaces-and-tabs": "off",
-//         "no-unused-vars": "warn"
-//     }
-//     // "editor.defaultFormatter": "esbenp.prettier-vscode",
-//     // "[javascript]": {
-//     //     "editor.defaultFormatter": "esbenp.prettier-vscode"
-//     // },
-//     // "editor.formatOnSave": true
-// }

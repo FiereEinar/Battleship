@@ -1,5 +1,5 @@
-import Tile from './tile';
-import { getRandomNum } from '../js/utils';
+import Tile from './tile.js';
+import { getRandomNum } from '../js/utils.js';
 
 export default class Gameboard {
     constructor() {
@@ -78,5 +78,13 @@ export default class Gameboard {
             );
             hitShip.hit();
         }
+    }
+
+    isAllShipSunk() {
+        let isAllShipSunk = true;
+        this.aliveShips.forEach((ship) => {
+            if (!ship.isSunk()) isAllShipSunk = false;
+        });
+        return isAllShipSunk;
     }
 }
