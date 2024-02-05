@@ -1,9 +1,9 @@
 import Player from './player.js';
 
 export default class PersonPlayer extends Player {
-    constructor() {
+    constructor(playerName) {
         super();
-        this.playerName = '';
+        this.playerName = playerName;
     }
 
     setPlayerName(name) {

@@ -2,8 +2,111 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: sans-serif;
 }
 
-h1 {
+body {
+    position: relative;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    border: 1px solid;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px;
+    gap: 10px;
+}
+
+.container > div {
+    border: 1px solid;
+    /* width: 45%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* player's boards */
+
+.playerBoard,
+.computerBoard {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.playerBoard > div,
+.computerBoard > div {
+    border: 1px solid;
+    width: 45px;
+    height: 45px;
+}
+
+.container > div > .computerBoard > .discovered,
+.container > div > .playerBoard > .discovered {
+    background-color: lightgrey;
+}
+.container > div > .computerBoard > .shipHit,
+.container > div > .playerBoard > .shipHit {
+    background-color: lightcoral;
+}
+
+/* <-------------------------> */
+
+.prompt {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    top: 0;
+    display: grid;
+    place-items: center;
+    display: none;
+}
+
+.showPrompt {
+    display: grid;
+}
+
+.promtContainer {
+    background-color: #ffc0cb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 50px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #ffcdd9, #e6adb7);
+    box-shadow:
+        20px 20px 60px #d9a3ad,
+        -20px -20px 60px #ffdde9;
+    gap: 10px;
+}
+
+.promtContainer > input {
+    padding: 2px 5px;
+    border-radius: 3px;
+    border: 1px solid;
+}
+
+.promtContainer > button {
+    padding: 3px 20px;
+    border: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* h1 {
     color: red;
 }
+
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+} */

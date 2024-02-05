@@ -15,6 +15,7 @@
         "import/no-unresolved": "off",
         "import/extensions": "off",
         "one-var": "off",
+        "no-constant-condition": "off",
         "no-useless-constructor": "off",
         "import/prefer-default-export": "off"
         // "import/no-extraneous-dependencies": [
