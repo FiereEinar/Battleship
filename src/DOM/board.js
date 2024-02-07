@@ -1,4 +1,10 @@
 export default function renderBoard(board, parentElement) {
+    // remove prevoius elements
+    const prev = parentElement.querySelectorAll('div');
+    if (prev.length !== 0) {
+        prev.forEach((div) => div.remove());
+    }
+
     board.forEach((row, i) => {
         row.forEach((tile, j) => {
             const newTile = document.createElement('div');

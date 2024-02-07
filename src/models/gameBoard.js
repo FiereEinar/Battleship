@@ -31,8 +31,6 @@ export default class Gameboard {
         return this.board;
     }
 
-    // TODO: add a checker if the given coordinate is already occupied
-
     placeShip(coords, ship) {
         coords.forEach((coord) => {
             const [x, y] = coord;
@@ -101,7 +99,7 @@ export default class Gameboard {
     }
 
     isOutOfBounds(pos, len) {
-        return pos - len < 0 || pos - len > 10;
+        return pos - len < 0 || pos > 10;
     }
 
     receiveAttack(x, y) {
@@ -120,5 +118,11 @@ export default class Gameboard {
             if (!ship.isSunk()) isAllShipSunk = false;
         });
         return isAllShipSunk;
+    }
+
+    restartBoard() {
+        this.board = this.fillBoard();
+        this.aliveShips = [];
+        this.takenSpots = [];
     }
 }

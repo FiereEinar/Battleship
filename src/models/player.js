@@ -32,4 +32,9 @@ export default class Player {
             }
         });
     }
+
+    redeployShips() {
+        this.getBoard().restartBoard();
+        this.addShips();
+    }
 }

@@ -22,6 +22,8 @@ const screen = (() => {
     const initializeGame = (playerName) => {
         const playerContainer = document.querySelector('.playerBoard');
         const computerContainer = document.querySelector('.computerBoard');
+        const shuffleBtn = document.querySelector('.shuffle');
+        const startBtn = document.querySelector('.start');
 
         player.setPlayerName(playerName);
         setPlayerName(playerName);
@@ -32,11 +34,13 @@ const screen = (() => {
         renderBoard(player.getBoard().board, playerContainer);
         renderBoard(computer.getBoard().board, computerContainer);
 
-        initializePlayerAttack(); // only inittialize when done editing
         showShips();
         // give them the opportunity to change the position of thier ships
         // enableEditing();
         // have an event listener on the start button that well, starts the game
+        shuffleBtn.addEventListener('click', shufflePlayerTiles);
+
+        startBtn.addEventListener('click', startBattle);
     };
 
     const initializePlayerAttack = () => {
@@ -56,6 +60,27 @@ const screen = (() => {
         enemyTiles.forEach((tile) => {
             tile.addEventListener('click', tileClickHandler);
         });
+    };
+
+    const shufflePlayerTiles = () => {
+        const playerContainer = document.querySelector('.playerBoard');
+
+        player.redeployShips();
+        renderBoard(player.getBoard().board, playerContainer);
+        showShips();
+    };
+
+    const startBattle = () => {
+        initializePlayerAttack();
+        hideControls();
+    };
+
+    const showControls = () => {
+        document.querySelector('.controls').classList.remove('hideControls');
+    };
+
+    const hideControls = () => {
+        document.querySelector('.controls').classList.add('hideControls');
     };
 
     const playerAttack = (x, y) => {
@@ -115,8 +140,15 @@ const screen = (() => {
 
     const showShips = () => {
         const tiles = getPlayerTiles();
+        const enemyTiles = getComputerTiles();
 
         tiles.forEach((tile) => {
+            if (tile.dataset.ship !== 'none') {
+                tile.classList.add('hasShip');
+            }
+        });
+
+        enemyTiles.forEach((tile) => {
             if (tile.dataset.ship !== 'none') {
                 tile.classList.add('hasShip');
             }

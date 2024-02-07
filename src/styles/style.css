@@ -23,17 +23,31 @@ body {
 }
 
 .container > div {
-    border: 1px solid;
-    /* width: 45%; */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
+.playerContainer > .controls {
+    display: flex;
+    margin: 10px 0;
+    gap: 10px;
+}
+
+.playerContainer > .controls > button {
+    width: 80px;
+    cursor: pointer;
+}
+
+.playerContainer > .hideControls {
+    display: none;
+}
+
 /* player's boards */
 
-.container > div > .playerBoard > .hasShip {
+.container > div > .playerBoard > .hasShip,
+.container > div > .computerBoard > .hasShip {
     background-color: lightblue;
 }
 
@@ -46,8 +60,8 @@ body {
 .playerBoard > div,
 .computerBoard > div {
     border: 1px solid;
-    width: 45px;
-    height: 45px;
+    width: 33px;
+    height: 33px;
 }
 
 .container > div > .computerBoard > .discovered,
