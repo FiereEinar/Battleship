@@ -32,9 +32,10 @@ const screen = (() => {
         renderBoard(player.getBoard().board, playerContainer);
         renderBoard(computer.getBoard().board, computerContainer);
 
-        initializePlayerAttack();
+        initializePlayerAttack(); // only inittialize when done editing
+        showShips();
         // give them the opportunity to change the position of thier ships
-
+        // enableEditing();
         // have an event listener on the start button that well, starts the game
     };
 
@@ -95,6 +96,7 @@ const screen = (() => {
     };
 
     const setPlayerName = (name) => {
+        if (name.length === 0) return;
         const domName = document.querySelector('.playerName');
         domName.innerHTML = name;
     };
@@ -105,6 +107,28 @@ const screen = (() => {
 
     const enableClickEvent = () => {
         document.querySelector('.computerBoard').style.pointerEvents = 'auto';
+    };
+
+    // const enableEditing = () => {
+
+    // };
+
+    const showShips = () => {
+        const tiles = getPlayerTiles();
+
+        tiles.forEach((tile) => {
+            if (tile.dataset.ship !== 'none') {
+                tile.classList.add('hasShip');
+            }
+        });
+    };
+
+    const hideShips = () => {
+        const tiles = getPlayerTiles();
+
+        tiles.forEach((tile) => {
+            tile.classList.remove('hasShip');
+        });
     };
 
     return {

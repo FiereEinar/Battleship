@@ -7,6 +7,7 @@ export default function renderBoard(board, parentElement) {
             newTile.dataset.col = j;
             if (tile.hasShip()) {
                 newTile.dataset.ship = tile.ship;
+                // newTile.setAttribute('draggable', 'true');
             } else {
                 newTile.dataset.ship = 'none';
             }

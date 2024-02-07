@@ -33,6 +33,10 @@ body {
 
 /* player's boards */
 
+.container > div > .playerBoard > .hasShip {
+    background-color: lightblue;
+}
+
 .playerBoard,
 .computerBoard {
     display: grid;
