@@ -1,2 +1,0 @@
-function shuffleButton(parent) {
-}

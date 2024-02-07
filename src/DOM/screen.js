@@ -3,8 +3,7 @@ import Computer from '../models/computer.js';
 import renderBoard from './board.js';
 
 const screen = (() => {
-    // maybe put your players here?
-    const player = new PersonPlayer('null');
+    const player = new PersonPlayer('null'); // to be set after the prompt
     const computer = new Computer();
 
     const start = () => {
@@ -25,22 +24,26 @@ const screen = (() => {
         const shuffleBtn = document.querySelector('.shuffle');
         const startBtn = document.querySelector('.start');
 
-        player.setPlayerName(playerName);
         setPlayerName(playerName);
-        // add their ships
+
         player.addShips();
         computer.addShips();
-        // render their board
+
         renderBoard(player.getBoard().board, playerContainer);
         renderBoard(computer.getBoard().board, computerContainer);
 
+        showControls();
         showShips();
-        // give them the opportunity to change the position of thier ships
-        // enableEditing();
-        // have an event listener on the start button that well, starts the game
+        // TODO: give them the opportunity to change the position of thier ships
+
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
 
         startBtn.addEventListener('click', startBattle);
+    };
+
+    const startBattle = () => {
+        initializePlayerAttack();
+        hideControls();
     };
 
     const initializePlayerAttack = () => {
@@ -50,9 +53,15 @@ const screen = (() => {
         const tileClickHandler = (event) => {
             const tile = event.currentTarget;
             attackTile(tile);
-            playerAttack(tile.dataset.row, tile.dataset.col);
-            computerAttack();
+            computer
+                .getBoard()
+                .receiveAttack(tile.dataset.row, tile.dataset.col);
             disableClickEvent();
+            // we do this checking so that we only enableClickEvents
+            // and allow the computer to attack if there's no winner
+            if (!checkWinner(computer, player.getPlayerName())) {
+                computerAttack();
+            }
             // Remove the event listener after it's been triggered
             tile.removeEventListener('click', tileClickHandler);
         };
@@ -60,6 +69,51 @@ const screen = (() => {
         enemyTiles.forEach((tile) => {
             tile.addEventListener('click', tileClickHandler);
         });
+    };
+
+    const computerAttack = () => {
+        setTimeout(() => {
+            const [x, y] = computer.getRandomMove();
+            player.getBoard().receiveAttack(x, y);
+            updateAttackedTile(x, y);
+            if (!checkWinner(player, 'Computer')) {
+                enableClickEvent();
+            }
+        }, 0);
+    };
+
+    const checkWinner = (attackedPlayer, attackerName) => {
+        if (attackedPlayer.getBoard().isAllShipSunk()) {
+            document.querySelector('.winner').innerHTML =
+                `Winner: ${attackerName}`;
+            showWinner();
+            return true;
+        }
+        return false;
+    };
+
+    const showWinner = () => {
+        disableClickEvent();
+
+        document.querySelector('.endgame').classList.add('showEndgame');
+
+        const restartBtn = document.querySelector('.endgame > .restart');
+        restartBtn.addEventListener('click', () => {
+            restartGame();
+        });
+    };
+
+    const hideWinner = () => {
+        // hiding the winner and restart button
+        document.querySelector('.endgame').classList.remove('showEndgame');
+    };
+
+    const restartGame = () => {
+        player.getBoard().restartBoard();
+        computer.getBoard().restartBoard();
+        initializeGame(player.getPlayerName());
+        hideWinner();
+        enableClickEvent();
     };
 
     const shufflePlayerTiles = () => {
@@ -70,29 +124,12 @@ const screen = (() => {
         showShips();
     };
 
-    const startBattle = () => {
-        initializePlayerAttack();
-        hideControls();
-    };
-
     const showControls = () => {
         document.querySelector('.controls').classList.remove('hideControls');
     };
 
     const hideControls = () => {
         document.querySelector('.controls').classList.add('hideControls');
-    };
-
-    const playerAttack = (x, y) => {
-        computer.getBoard().receiveAttack(x, y);
-    };
-    const computerAttack = () => {
-        setTimeout(() => {
-            const [x, y] = computer.getRandomMove();
-            player.getBoard().receiveAttack(x, y);
-            updateAttackedTile(x, y);
-            enableClickEvent();
-        }, 1000);
     };
 
     const updateAttackedTile = (x, y) => {
@@ -122,6 +159,7 @@ const screen = (() => {
 
     const setPlayerName = (name) => {
         if (name.length === 0) return;
+        player.setPlayerName(name);
         const domName = document.querySelector('.playerName');
         domName.innerHTML = name;
     };
@@ -134,13 +172,9 @@ const screen = (() => {
         document.querySelector('.computerBoard').style.pointerEvents = 'auto';
     };
 
-    // const enableEditing = () => {
-
-    // };
-
     const showShips = () => {
         const tiles = getPlayerTiles();
-        const enemyTiles = getComputerTiles();
+        // const enemyTiles = getComputerTiles();
 
         tiles.forEach((tile) => {
             if (tile.dataset.ship !== 'none') {
@@ -148,27 +182,16 @@ const screen = (() => {
             }
         });
 
-        enemyTiles.forEach((tile) => {
-            if (tile.dataset.ship !== 'none') {
-                tile.classList.add('hasShip');
-            }
-        });
-    };
-
-    const hideShips = () => {
-        const tiles = getPlayerTiles();
-
-        tiles.forEach((tile) => {
-            tile.classList.remove('hasShip');
-        });
+        // enemyTiles.forEach((tile) => {
+        //     if (tile.dataset.ship !== 'none') {
+        //         tile.classList.add('hasShip');
+        //     }
+        // });
     };
 
     return {
         start,
     };
 })();
-
-// maybe make it so that the game will only start after
-// pressing the submit button?
 
 export default screen;

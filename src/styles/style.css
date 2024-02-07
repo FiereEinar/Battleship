@@ -10,6 +10,11 @@ body {
     min-height: 100vh;
 }
 
+header {
+    text-align: center;
+    padding: 15px;
+}
+
 .container {
     width: 100%;
     min-height: 100vh;
@@ -27,6 +32,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 5px;
 }
 
 .playerContainer > .controls {
@@ -36,6 +42,21 @@ body {
 }
 
 .playerContainer > .controls > button {
+    width: 80px;
+    cursor: pointer;
+}
+
+.playerContainer > .endgame {
+    display: none;
+}
+
+.playerContainer > .showEndgame {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.playerContainer > .showEndgame > button {
     width: 80px;
     cursor: pointer;
 }
