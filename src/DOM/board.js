@@ -12,10 +12,29 @@ export default function renderBoard(board, parentElement) {
             newTile.dataset.col = j;
             if (tile.hasShip()) {
                 newTile.dataset.ship = tile.ship;
+                newTile.draggable = true;
+                newTile.addEventListener('dragstart', (e) => {
+                    console.log(e);
+                });
             } else {
                 newTile.dataset.ship = 'none';
+                newTile.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    console.log(`${e.target.dataset.row}-${e.target.dataset.col}`);
+                });
             }
             parentElement.appendChild(newTile);
         });
     });
 }
+
+/*  
+
+PLAN:
+have a draggable sprite (could be just a div)
+that sprite's origin coordinates will determine where will it be placed
+
+MAYBE:
+pass the entire board class to render function and just extract the board itseft in the function?
+
+*/

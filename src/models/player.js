@@ -1,5 +1,6 @@
 import Gameboard from './gameBoard.js';
 import Ship from './ship.js';
+import shipData from '../constants/shipData.js';
 
 export default class Player {
     constructor() {
@@ -11,15 +12,8 @@ export default class Player {
     }
 
     addShips() {
-        const shipData = [
-            ['carrier', 5],
-            ['battleship', 4],
-            ['cruiser', 3],
-            ['submarine', 3],
-            ['destroyer', 2],
-        ];
-
-        shipData.forEach((ship) => {
+        const ships = shipData;
+        ships.forEach((ship) => {
             const [shipName, length] = ship;
             const newShip = new Ship(shipName, length);
 

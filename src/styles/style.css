@@ -24,7 +24,7 @@ header {
     justify-content: center;
     align-items: flex-start;
     padding: 50px;
-    gap: 10px;
+    gap: 20px;
 }
 
 .container > div {
@@ -73,16 +73,19 @@ header {
 }
 
 .playerBoard,
-.computerBoard {
+.computerBoard,
+.editContainer {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
 }
 
 .playerBoard > div,
-.computerBoard > div {
+.computerBoard > div,
+.editContainer > div {
     border: 1px solid;
     width: 33px;
     height: 33px;
+    background-color: #fff;
 }
 
 .container > div > .computerBoard > .discovered,
@@ -95,6 +98,8 @@ header {
 }
 
 /* <-------------------------> */
+
+/* prompt */
 
 .prompt {
     position: absolute;
@@ -118,7 +123,7 @@ header {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 100px 50px;
+    padding: 30px;
     border-radius: 10px;
     background: linear-gradient(145deg, #ffcdd9, #e6adb7);
     box-shadow:
@@ -127,25 +132,50 @@ header {
     gap: 10px;
 }
 
-.promtContainer > input {
+.promtContainer input {
     padding: 2px 5px;
     border-radius: 3px;
     border: 1px solid;
 }
 
-.promtContainer > button {
+.promtContainer button {
     padding: 3px 20px;
     border: 1px solid;
     border-radius: 5px;
     cursor: pointer;
 }
 
-/* h1 {
-    color: red;
+.ships-drag > .componentContainer {
+    border: 1px solid;
+    min-height: 100px;
+    padding: 5px;
+    scroll-snap-type: x mandatory;
+    display: flex;
+    overflow: auto;
+    width: 332px;
+    /* gap: 30px; */
+    align-items: center;
 }
 
+.componentContainer > div {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    scroll-snap-align: center;
+    margin: 0 50px;
+}
+
+.componentContainer > div > div {
+    border: 1px solid;
+    width: 33px;
+    height: 33px;
+    background-color: #fff;
+}
+
+/* <-------------------------> */
+
+/* 
 @media (max-width: 600px) {
     .container {
         flex-direction: column;
     }
-} */
+}  */

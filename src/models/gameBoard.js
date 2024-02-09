@@ -1,7 +1,5 @@
 import Tile from './tile.js';
 import { getRandomNum } from '../js/utils.js';
-// import Ship from './ship.js';
-// debug idea: simulate creating a ship here
 
 export default class Gameboard {
     constructor() {
