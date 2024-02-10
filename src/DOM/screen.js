@@ -14,12 +14,12 @@ const screen = (() => {
     const start = () => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
-        // TODO: fix: the game suddenly stops working in the middle of 2nd round
         // TODO: bug: the user is able to submit the prompt when editing and it ends up clearing the board
+        // TODO: replace the text at the bottom if the user submits without filling the name or placing all the ships
         allowEditing();
 
         submit.addEventListener('click', () => {
-            if (input.value.length !== 0 && shipQueue.length !== 0) {
+            if (input.value.length !== 0 && shipQueue.length === 1) {
                 initializeGame(input.value);
                 screenController.hidePrompt();
             }
