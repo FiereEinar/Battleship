@@ -3,25 +3,24 @@ import Computer from '../models/computer.js';
 import renderBoard from './board.js';
 import shipData from '../constants/shipData.js';
 import Ship from '../models/ship.js';
+import screenController from './controller.js';
 
 const screen = (() => {
     const player = new PersonPlayer('null'); // to be set after the prompt
     const computer = new Computer();
     const editContainer = document.querySelector('.editContainer');
-    const prompt = document.querySelector('.prompt');
     let shipQueue = JSON.parse(JSON.stringify(shipData)); // deep copy
 
     const start = () => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
-        // TODO: don't allow the player to place a ship that is occupied and out of bounds
         // TODO: fix: the game suddenly stops working in the middle of 2nd round
         allowEditing();
 
         submit.addEventListener('click', () => {
             if (input.value.length !== 0 && shipQueue.length !== 0) {
                 initializeGame(input.value);
-                prompt.classList.remove('showPrompt');
+                screenController.hidePrompt();
             }
         });
     };
@@ -33,27 +32,25 @@ const screen = (() => {
         const startBtn = document.querySelector('.start');
         const editBtn = document.querySelector('.edit');
 
-        setPlayerName(playerName);
-
+        screenController.setPlayerName(playerName);
+        player.setPlayerName(playerName);
         computer.addShips();
 
         renderBoard(player.getBoard().board, playerContainer);
         renderBoard(computer.getBoard().board, computerContainer);
 
-        showControls();
-        showShips(playerContainer);
+        screenController.showControls();
+        screenController.showShips(playerContainer);
 
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
-
         startBtn.addEventListener('click', startBattle);
-
         editBtn.addEventListener('click', allowEditing);
     };
 
     const allowEditing = () => {
         shipQueue = JSON.parse(JSON.stringify(shipData));
         player.getBoard().restartBoard();
-        prompt.classList.add('showPrompt');
+        screenController.showPrompt();
 
         renderBoard(player.getBoard().board, editContainer);
         startShipPlacement(shipQueue);
@@ -120,7 +117,7 @@ const screen = (() => {
                 if (canBePlaced) {
                     // rerender the board after placing a ship
                     renderBoard(player.getBoard().board, editContainer);
-                    showShips(editContainer);
+                    screenController.showShips(editContainer);
                     // removing the first element since it was already placed
                     if (shipQueue.length > 1) {
                         shipQueue.shift();
@@ -147,7 +144,7 @@ const screen = (() => {
             }
         }
 
-        clearTileClasses(tiles);
+        screenController.clearTileClasses(tiles, 'hasShip');
         if (axis === 'X' && player.getBoard().isOutOfBounds(xCopy, length - 1))
             return;
         if (axis === 'Y' && player.getBoard().isOutOfBounds(yCopy, length - 1))
@@ -164,19 +161,9 @@ const screen = (() => {
         });
     };
 
-    // specifically for hasShip class
-    const clearTileClasses = (board) => {
-        board.forEach((tile) => {
-            // prevents from removing the previously placed ships
-            if (tile.dataset.ship === 'none') {
-                tile.classList.remove('hasShip');
-            }
-        });
-    };
-
     const startBattle = () => {
         initializePlayerAttack();
-        hideControls();
+        screenController.hideControls();
     };
 
     const initializePlayerAttack = () => {
@@ -185,11 +172,11 @@ const screen = (() => {
         // Define a named function for the event listener
         const tileClickHandler = (event) => {
             const tile = event.currentTarget;
-            attackTile(tile);
+            screenController.setAttackedTileClass(tile);
             computer
                 .getBoard()
                 .receiveAttack(tile.dataset.row, tile.dataset.col);
-            disableClickEvent();
+            screenController.disableClickEvent();
             // Remove the event listener after it's been triggered
             tile.removeEventListener('click', tileClickHandler);
             // we do this checking so that we only enableClickEvents
@@ -210,35 +197,26 @@ const screen = (() => {
             player.getBoard().receiveAttack(x, y);
             updateAttackedTile(x, y);
             if (!checkWinner(player, 'Computer')) {
-                enableClickEvent();
+                screenController.enableClickEvent();
             }
         }, 0);
     };
 
     const checkWinner = (attackedPlayer, attackerName) => {
         if (attackedPlayer.getBoard().isAllShipSunk()) {
-            document.querySelector('.winner').innerHTML =
-                `Winner: ${attackerName}`;
-            showWinner();
+            showWinner(attackerName);
             return true;
         }
         return false;
     };
 
-    const showWinner = () => {
-        disableClickEvent();
-
-        document.querySelector('.endgame').classList.add('showEndgame');
+    const showWinner = (name) => {
+        screenController.disableClickEvent();
+        screenController.showEndgamePrompt();
+        screenController.setWinnerName(name);
 
         const restartBtn = document.querySelector('.endgame > .restart');
-        restartBtn.addEventListener('click', () => {
-            restartGame();
-        });
-    };
-
-    const hideWinner = () => {
-        // hiding the winner and restart button
-        document.querySelector('.endgame').classList.remove('showEndgame');
+        restartBtn.addEventListener('click', restartGame);
     };
 
     const restartGame = () => {
@@ -246,8 +224,8 @@ const screen = (() => {
         computer.getBoard().restartBoard();
         player.addShips();
         initializeGame(player.getPlayerName());
-        hideWinner();
-        enableClickEvent();
+        screenController.hideEndgamePrompt();
+        screenController.enableClickEvent();
     };
 
     const shufflePlayerTiles = () => {
@@ -255,31 +233,15 @@ const screen = (() => {
 
         player.redeployShips();
         renderBoard(player.getBoard().board, playerContainer);
-        showShips(playerContainer);
-    };
-
-    const showControls = () => {
-        document.querySelector('.controls').classList.remove('hideControls');
-    };
-
-    const hideControls = () => {
-        document.querySelector('.controls').classList.add('hideControls');
+        screenController.showShips(playerContainer);
     };
 
     const updateAttackedTile = (x, y) => {
         const tiles = getPlayerTiles();
         tiles.forEach((tile) => {
             if (+tile.dataset.row === x && +tile.dataset.col === y)
-                attackTile(tile);
+                screenController.setAttackedTileClass(tile);
         });
-    };
-
-    const attackTile = (tile) => {
-        if (tile.dataset.ship !== 'none') {
-            tile.classList.add('shipHit');
-        } else {
-            tile.classList.add('discovered');
-        }
     };
 
     const getPlayerTiles = () => {
@@ -289,31 +251,6 @@ const screen = (() => {
     const getComputerTiles = () => {
         const tiles = document.querySelectorAll('.computerBoard > div');
         return tiles;
-    };
-
-    const setPlayerName = (name) => {
-        if (name.length === 0) return;
-        player.setPlayerName(name);
-        const domName = document.querySelector('.playerName');
-        domName.innerHTML = name;
-    };
-
-    const disableClickEvent = () => {
-        document.querySelector('.computerBoard').style.pointerEvents = 'none';
-    };
-
-    const enableClickEvent = () => {
-        document.querySelector('.computerBoard').style.pointerEvents = 'auto';
-    };
-
-    const showShips = (container) => {
-        const tiles = container.querySelectorAll('div');
-
-        tiles.forEach((tile) => {
-            if (tile.dataset.ship !== 'none') {
-                tile.classList.add('hasShip');
-            }
-        });
     };
 
     return {
