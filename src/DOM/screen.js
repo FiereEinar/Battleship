@@ -15,6 +15,7 @@ const screen = (() => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
         // TODO: fix: the game suddenly stops working in the middle of 2nd round
+        // TODO: bug: the user is able to submit the prompt when editing and it ends up clearing the board
         allowEditing();
 
         submit.addEventListener('click', () => {
@@ -222,6 +223,7 @@ const screen = (() => {
     const restartGame = () => {
         player.getBoard().restartBoard();
         computer.getBoard().restartBoard();
+        computer.resetMoves();
         player.addShips();
         initializeGame(player.getPlayerName());
         screenController.hideEndgamePrompt();

@@ -21,4 +21,8 @@ export default class Computer extends Player {
             }
         }
     }
+
+    resetMoves() {
+        this.previousMoves = [];
+    }
 }
