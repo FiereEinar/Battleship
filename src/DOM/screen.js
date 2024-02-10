@@ -8,7 +8,7 @@ const screen = (() => {
     const player = new PersonPlayer('null'); // to be set after the prompt
     const computer = new Computer();
     const editContainer = document.querySelector('.editContainer');
-    const shipQueue = shipData;
+    const shipQueue = JSON.parse(JSON.stringify(shipData));
 
     const start = () => {
         const prompt = document.querySelector('.prompt');
@@ -43,7 +43,7 @@ const screen = (() => {
         renderBoard(computer.getBoard().board, computerContainer);
 
         showControls();
-        showShips();
+        showShips(playerContainer);
         // TODO: give them the opportunity to change the position of thier ships
 
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
@@ -97,6 +97,7 @@ const screen = (() => {
                 }
                 // rerender the board after placing a ship
                 renderBoard(player.getBoard().board, editContainer);
+                showShips(editContainer);
                 // removing the first element since it was already placed
                 if (shipQueue.length > 1) {
                     shipQueue.shift();
@@ -229,7 +230,7 @@ const screen = (() => {
 
         player.redeployShips();
         renderBoard(player.getBoard().board, playerContainer);
-        showShips();
+        showShips(playerContainer);
     };
 
     const showControls = () => {
@@ -280,8 +281,8 @@ const screen = (() => {
         document.querySelector('.computerBoard').style.pointerEvents = 'auto';
     };
 
-    const showShips = () => {
-        const tiles = getPlayerTiles();
+    const showShips = (container) => {
+        const tiles = container.querySelectorAll('div');
 
         tiles.forEach((tile) => {
             if (tile.dataset.ship !== 'none') {
