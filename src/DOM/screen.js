@@ -1,26 +1,27 @@
 import PersonPlayer from '../models/person.js';
 import Computer from '../models/computer.js';
 import renderBoard from './board.js';
-import Gameboard from '../models/gameBoard.js';
 import shipData from '../constants/shipData.js';
+import Ship from '../models/ship.js';
 
 const screen = (() => {
     const player = new PersonPlayer('null'); // to be set after the prompt
     const computer = new Computer();
+    const editContainer = document.querySelector('.editContainer');
+    const shipQueue = shipData;
 
     const start = () => {
         const prompt = document.querySelector('.prompt');
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
-        const editContainer = document.querySelector('.editContainer');
 
         // the board for editing the position of ships
-        // renderBoard(new Gameboard().getBoard(), editContainer);
-        // addDraggableShips();
+        renderBoard(player.getBoard().board, editContainer);
+        startShipPlacement(shipQueue);
 
         prompt.classList.add('showPrompt');
         submit.addEventListener('click', () => {
-            if (input.value.length !== 0) {
+            if (input.value.length !== 0 && shipQueue.length !== 0) {
                 initializeGame(input.value);
                 prompt.classList.remove('showPrompt');
             }
@@ -35,7 +36,7 @@ const screen = (() => {
 
         setPlayerName(playerName);
 
-        player.addShips();
+        // player.addShips();
         computer.addShips();
 
         renderBoard(player.getBoard().board, playerContainer);
@@ -50,69 +51,100 @@ const screen = (() => {
         startBtn.addEventListener('click', startBattle);
     };
 
-    const addDraggableShips = () => {
-        // does not WORKKKKKKKKKKKKKKKKKKKKKKKKKK
-        const componentsContainer = document.querySelector(
-            '.componentContainer',
-        );
-        const ships = shipData;
+    const startShipPlacement = (ship) => {
+        const tiles = document.querySelectorAll('.editContainer > div');
+        const shipLength = ship[0][1];
+        const shipName = ship[0][0];
+        let direction = 'X';
 
-        ships.forEach((ship) => {
-            const [name, length] = ship;
-
-            const container = document.createElement('div');
-            container.dataset.ship = name;
-            container.draggable = true;
-
-            for (let i = 0; i < length; i++) {
-                const shipPart = document.createElement('div');
-                shipPart.classList.add('shipPart'); // Add a class for easy targeting
-                container.appendChild(shipPart);
-
-                shipPart.addEventListener('dragstart', (e) => {
-                    // Set the currently dragged ship
-                    currentDraggedShip = container;
-                    e.dataTransfer.setData('text/plain', ''); // Necessary for some browsers to allow drag
-                });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && direction === 'X') {
+                direction = 'Y';
+            } else {
+                direction = 'X';
             }
-
-            componentsContainer.appendChild(container);
         });
 
-        // Add dragover event listener to the container holding draggable tiles
-        componentsContainer.addEventListener('dragover', (e) => {
-            e.preventDefault(); // Allow drop
-
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            // Loop through all the div tiles on the board
-            const tiles = document.querySelectorAll('.editContainer > div');
-            let targetTile = null;
-            let maxIntersectPosition = 0;
-
-            tiles.forEach((tile) => {
-                const tileRect = tile.getBoundingClientRect();
-                // Check if the mouse position intersects with the tile
-                if (
-                    mouseX >= tileRect.left &&
-                    mouseX <= tileRect.right &&
-                    mouseY >= tileRect.top &&
-                    mouseY <= tileRect.bottom
-                ) {
-                    // Check if this tile is further to the right than any previously found tile
-                    if (tileRect.right > maxIntersectPosition) {
-                        maxIntersectPosition = tileRect.right;
-                        targetTile = tile;
-                    }
-                }
+        tiles.forEach((tile) => {
+            tile.addEventListener('mouseover', () => {
+                showPlacementPreview(
+                    +tile.dataset.row,
+                    +tile.dataset.col,
+                    shipLength,
+                    direction,
+                );
             });
 
-            if (targetTile && currentDraggedShip) {
-                // Do something with the targetTile
-                console.log('The rightmost tile at the drop position is:', targetTile);
+            tile.addEventListener('click', () => {
+                const newShip = new Ship(shipName, shipLength);
+
+                if (direction === 'X') {
+                    player
+                        .getBoard()
+                        .placeShipX(
+                            newShip,
+                            +tile.dataset.row,
+                            +tile.dataset.col,
+                        );
+                } else {
+                    player
+                        .getBoard()
+                        .placeShipY(
+                            newShip,
+                            +tile.dataset.row,
+                            +tile.dataset.col,
+                        );
+                }
+                // rerender the board after placing a ship
+                renderBoard(player.getBoard().board, editContainer);
+                // removing the first element since it was already placed
+                if (shipQueue.length > 1) {
+                    shipQueue.shift();
+                    // restarting the eventlisteners for placements
+                    startShipPlacement(shipQueue);
+                }
+            });
+        });
+    };
+
+    const showPlacementPreview = (x, y, length, axis) => {
+        const tiles = document.querySelectorAll('.editContainer > div');
+        const coordinates = [];
+        const xCopy = x;
+        const yCopy = y;
+
+        for (let i = 0; i < length; i++) {
+            coordinates.push([x, y]);
+            if (axis === 'X') {
+                x--;
             } else {
-                console.log('No tile found at the drop position.');
+                y--;
+            }
+        }
+
+        clearTileClasses(tiles);
+        if (axis === 'X' && player.getBoard().isOutOfBounds(xCopy, length - 1))
+            return;
+        if (axis === 'Y' && player.getBoard().isOutOfBounds(yCopy, length - 1))
+            return;
+
+        coordinates.forEach((coord) => {
+            const [row, col] = coord;
+
+            tiles.forEach((tile) => {
+                if (row === +tile.dataset.row && col === +tile.dataset.col) {
+                    tile.classList.add('hasShip');
+                }
+            });
+        });
+    };
+
+    // specifically for hasShip class
+    const clearTileClasses = (board) => {
+        board.forEach((tile) => {
+            // prevents from removing the previously placed ships
+            if (tile.dataset.ship === 'none') {
+                tile.classList.remove('hasShip');
             }
         });
     };
@@ -250,19 +282,12 @@ const screen = (() => {
 
     const showShips = () => {
         const tiles = getPlayerTiles();
-        // const enemyTiles = getComputerTiles();
 
         tiles.forEach((tile) => {
             if (tile.dataset.ship !== 'none') {
                 tile.classList.add('hasShip');
             }
         });
-
-        // enemyTiles.forEach((tile) => {
-        //     if (tile.dataset.ship !== 'none') {
-        //         tile.classList.add('hasShip');
-        //     }
-        // });
     };
 
     return {

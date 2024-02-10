@@ -68,7 +68,8 @@ header {
 /* player's boards */
 
 .container > div > .playerBoard > .hasShip,
-.container > div > .computerBoard > .hasShip {
+.container > div > .computerBoard > .hasShip,
+.editContainer > .hasShip {
     background-color: lightblue;
 }
 
@@ -145,25 +146,36 @@ header {
     cursor: pointer;
 }
 
-.ships-drag > .componentContainer {
+.ships-drag {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.componentContainer {
     border: 1px solid;
     min-height: 100px;
     padding: 5px;
-    scroll-snap-type: x mandatory;
+    /* scroll-snap-type: x mandatory; */
     display: flex;
     overflow: auto;
-    width: 332px;
-    /* gap: 30px; */
+    width: fit-content;
+    /* flex-direction: row; */
+    gap: 30px;
     align-items: center;
 }
 
-.componentContainer > div {
+.editContainer {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
-    scroll-snap-align: center;
-    margin: 0 50px;
+    /* scroll-snap-align: center; */
+    margin: 0 10px;
 }
 
+.editContainer > div,
 .componentContainer > div > div {
     border: 1px solid;
     width: 33px;

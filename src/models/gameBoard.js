@@ -29,6 +29,10 @@ export default class Gameboard {
         return this.board;
     }
 
+    getTileAt(x, y) {
+        return this.board[x][y];
+    }
+
     placeShip(coords, ship) {
         coords.forEach((coord) => {
             const [x, y] = coord;
@@ -38,48 +42,78 @@ export default class Gameboard {
         this.aliveShips.push(ship);
     }
 
-    placeShipX(ship) {
-        let x, y, xCopy; // copy is passed to the isOutOfbounds() because x is being decremented
+    placeShipX(ship, argX, argY) {
+        let x;
+        let y;
+        let xCopy; // copy is passed to the isOutOfbounds() because x is being decremented
         let coordinates;
 
-        // we keep on getting new random coords if its out of bounds
-        do {
-            x = getRandomNum(10);
-            y = getRandomNum(10);
+        if (
+            (argX === undefined && argY === undefined) ||
+            (argX === null && argY === null)
+        ) {
+            // we keep on getting new random coords if its out of bounds or there's no coordinate provided
+            do {
+                x = getRandomNum(10);
+                y = getRandomNum(10);
+
+                coordinates = [];
+                xCopy = x;
+                // then we get the coordinates and pass it to the isAlreadyTaken funcion
+                // to check if it's taken
+                for (let i = 0; i < ship.shipLength; i++) {
+                    coordinates.push([x, y]);
+                    x--;
+                }
+            } while (
+                this.isOutOfBounds(xCopy, ship.shipLength) ||
+                this.isAlreadyTaken(coordinates)
+            );
+        } else {
             coordinates = [];
-            xCopy = x;
-            // then we get the coordinates and pass it to the isAlreadyTaken funcion
-            // to check if it's taken
+
             for (let i = 0; i < ship.shipLength; i++) {
-                coordinates.push([x, y]);
-                x--;
+                coordinates.push([argX, argY]);
+                argX--;
             }
-        } while (
-            this.isOutOfBounds(xCopy, ship.shipLength) ||
-            this.isAlreadyTaken(coordinates)
-        );
+        }
 
         this.placeShip(coordinates, ship);
     }
 
-    placeShipY(ship) {
-        let x, y, yCopy;
+    placeShipY(ship, argX, argY) {
+        let x = argX;
+        let y = argY;
+        let yCopy; // copy is passed to the isOutOfbounds() because x is being decremented
         let coordinates;
 
-        do {
-            x = getRandomNum(10);
-            y = getRandomNum(10);
+        if (
+            (argX === undefined && argY === undefined) ||
+            (argX === null && argY === null)
+        ) {
+            do {
+                x = getRandomNum(10);
+                y = getRandomNum(10);
+
+                coordinates = [];
+                yCopy = y;
+
+                for (let i = 0; i < ship.shipLength; i++) {
+                    coordinates.push([x, y]);
+                    y--;
+                }
+            } while (
+                this.isOutOfBounds(yCopy, ship.shipLength) ||
+                this.isAlreadyTaken(coordinates)
+            );
+        } else {
             coordinates = [];
-            yCopy = y;
 
             for (let i = 0; i < ship.shipLength; i++) {
-                coordinates.push([x, y]);
-                y--;
+                coordinates.push([argX, argY]);
+                argY--;
             }
-        } while (
-            this.isOutOfBounds(yCopy, ship.shipLength) ||
-            this.isAlreadyTaken(coordinates)
-        );
+        }
 
         this.placeShip(coordinates, ship);
     }
