@@ -3,7 +3,6 @@ import Computer from '../models/computer.js';
 import renderBoard from './board.js';
 import shipData from '../constants/shipData.js';
 import Ship from '../models/ship.js';
-import Gameboard from '../models/gameBoard.js';
 
 const screen = (() => {
     const player = new PersonPlayer('null'); // to be set after the prompt
@@ -15,11 +14,8 @@ const screen = (() => {
     const start = () => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
-
-        // TODO: the board must be cleared when editing
         // TODO: don't allow the player to place a ship that is occupied and out of bounds
-        // TODO: bugfix: when clicking the edit button and submitting it,
-        // the computer adds another batch of ships
+        // TODO: the game suddenly stops working in the middle of 2nd round
         allowEditing();
 
         submit.addEventListener('click', () => {
@@ -39,7 +35,6 @@ const screen = (() => {
 
         setPlayerName(playerName);
 
-        // player.addShips();
         computer.addShips();
 
         renderBoard(player.getBoard().board, playerContainer);
@@ -47,7 +42,6 @@ const screen = (() => {
 
         showControls();
         showShips(playerContainer);
-        // TODO: give them the opportunity to change the position of thier ships
 
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
 
@@ -234,6 +228,7 @@ const screen = (() => {
     const restartGame = () => {
         player.getBoard().restartBoard();
         computer.getBoard().restartBoard();
+        player.addShips();
         initializeGame(player.getPlayerName());
         hideWinner();
         enableClickEvent();

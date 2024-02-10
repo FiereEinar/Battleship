@@ -13,6 +13,7 @@ export default class Player {
 
     addShips() {
         const ships = shipData;
+        this.getBoard().restartBoard();
         ships.forEach((ship) => {
             const [shipName, length] = ship;
             const newShip = new Ship(shipName, length);
