@@ -15,7 +15,7 @@ const screen = (() => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
         // TODO: don't allow the player to place a ship that is occupied and out of bounds
-        // TODO: the game suddenly stops working in the middle of 2nd round
+        // TODO: fix: the game suddenly stops working in the middle of 2nd round
         allowEditing();
 
         submit.addEventListener('click', () => {
@@ -84,33 +84,49 @@ const screen = (() => {
             });
 
             tile.addEventListener('click', () => {
+                const x = +tile.dataset.row;
+                const y = +tile.dataset.col;
                 const newShip = new Ship(shipName, shipLength);
+                let canBePlaced = false;
 
                 if (direction === 'X') {
-                    player
+                    const coordinates = player
                         .getBoard()
-                        .placeShipX(
-                            newShip,
-                            +tile.dataset.row,
-                            +tile.dataset.col,
-                        );
+                        .getCoordinatesX(x, y, shipLength);
+
+                    if (
+                        !player.getBoard().isOutOfBounds(x, shipLength - 1) &&
+                        !player.getBoard().isAlreadyTaken(coordinates)
+                    ) {
+                        player.getBoard().placeShipX(newShip, x, y);
+                        canBePlaced = true;
+                    }
+                } else if (direction === 'Y') {
+                    const coordinates = player
+                        .getBoard()
+                        .getCoordinatesY(x, y, shipLength);
+
+                    if (
+                        !player.getBoard().isOutOfBounds(y, shipLength - 1) &&
+                        !player.getBoard().isAlreadyTaken(coordinates)
+                    ) {
+                        player.getBoard().placeShipY(newShip, x, y);
+                        canBePlaced = true;
+                    }
                 } else {
-                    player
-                        .getBoard()
-                        .placeShipY(
-                            newShip,
-                            +tile.dataset.row,
-                            +tile.dataset.col,
-                        );
+                    canBePlaced = false;
                 }
-                // rerender the board after placing a ship
-                renderBoard(player.getBoard().board, editContainer);
-                showShips(editContainer);
-                // removing the first element since it was already placed
-                if (shipQueue.length > 1) {
-                    shipQueue.shift();
-                    // restarting the eventlisteners for placements
-                    startShipPlacement(shipQueue);
+
+                if (canBePlaced) {
+                    // rerender the board after placing a ship
+                    renderBoard(player.getBoard().board, editContainer);
+                    showShips(editContainer);
+                    // removing the first element since it was already placed
+                    if (shipQueue.length > 1) {
+                        shipQueue.shift();
+                        // restarting the eventlisteners for placements
+                        startShipPlacement(shipQueue);
+                    }
                 }
             });
         });

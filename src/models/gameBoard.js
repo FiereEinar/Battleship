@@ -33,6 +33,26 @@ export default class Gameboard {
         return this.board[x][y];
     }
 
+    getCoordinatesX(x, y, length) {
+        const coords = [];
+
+        for (let i = 0; i < length; i++) {
+            coords.push([x, y]);
+            x--;
+        }
+        return coords;
+    }
+
+    getCoordinatesY(x, y, length) {
+        const coords = [];
+
+        for (let i = 0; i < length; i++) {
+            coords.push([x, y]);
+            y--;
+        }
+        return coords;
+    }
+
     placeShip(coords, ship) {
         coords.forEach((coord) => {
             const [x, y] = coord;
