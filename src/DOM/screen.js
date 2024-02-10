@@ -3,23 +3,25 @@ import Computer from '../models/computer.js';
 import renderBoard from './board.js';
 import shipData from '../constants/shipData.js';
 import Ship from '../models/ship.js';
+import Gameboard from '../models/gameBoard.js';
 
 const screen = (() => {
     const player = new PersonPlayer('null'); // to be set after the prompt
     const computer = new Computer();
     const editContainer = document.querySelector('.editContainer');
-    const shipQueue = JSON.parse(JSON.stringify(shipData));
+    const prompt = document.querySelector('.prompt');
+    let shipQueue = JSON.parse(JSON.stringify(shipData)); // deep copy
 
     const start = () => {
-        const prompt = document.querySelector('.prompt');
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
 
-        // the board for editing the position of ships
-        renderBoard(player.getBoard().board, editContainer);
-        startShipPlacement(shipQueue);
+        // TODO: the board must be cleared when editing
+        // TODO: don't allow the player to place a ship that is occupied and out of bounds
+        // TODO: bugfix: when clicking the edit button and submitting it,
+        // the computer adds another batch of ships
+        allowEditing();
 
-        prompt.classList.add('showPrompt');
         submit.addEventListener('click', () => {
             if (input.value.length !== 0 && shipQueue.length !== 0) {
                 initializeGame(input.value);
@@ -33,6 +35,7 @@ const screen = (() => {
         const computerContainer = document.querySelector('.computerBoard');
         const shuffleBtn = document.querySelector('.shuffle');
         const startBtn = document.querySelector('.start');
+        const editBtn = document.querySelector('.edit');
 
         setPlayerName(playerName);
 
@@ -49,6 +52,17 @@ const screen = (() => {
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
 
         startBtn.addEventListener('click', startBattle);
+
+        editBtn.addEventListener('click', allowEditing);
+    };
+
+    const allowEditing = () => {
+        shipQueue = JSON.parse(JSON.stringify(shipData));
+        player.getBoard().restartBoard();
+        prompt.classList.add('showPrompt');
+
+        renderBoard(player.getBoard().board, editContainer);
+        startShipPlacement(shipQueue);
     };
 
     const startShipPlacement = (ship) => {
