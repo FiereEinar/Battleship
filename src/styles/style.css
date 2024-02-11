@@ -90,6 +90,10 @@ header {
     background-color: var(--ocean);
 }
 
+.editContainer > .warning {
+    background-color: var(--danger);
+}
+
 .playerBoard,
 .computerBoard,
 .editContainer {

@@ -13,18 +13,18 @@ const screen = (() => {
 
     const start = () => {
         const submit = document.querySelector('.submitPrompt');
-        const input = document.querySelector('#name');
-        // TODO: replace the text at the bottom if the user submits without filling the name or placing all the ships
-        allowEditing();
+        enableEditing();
+        submit.addEventListener('click', submitHandler);
+    };
 
-        submit.addEventListener('click', () => {
-            if (input.value.length !== 0 && shipQueue.length === 1) {
-                initializeGame(input.value);
-                screenController.hidePrompt();
-            } else {
-                screenController.showSubmitWarning();
-            }
-        });
+    const submitHandler = () => {
+        const input = document.querySelector('#name');
+        if (input.value.length !== 0 && shipQueue.length === 1) {
+            initializeGame(input.value);
+            screenController.hidePrompt();
+        } else {
+            screenController.showSubmitWarning();
+        }
     };
 
     const initializeGame = (playerName) => {
@@ -46,10 +46,10 @@ const screen = (() => {
 
         shuffleBtn.addEventListener('click', shufflePlayerTiles);
         startBtn.addEventListener('click', startBattle);
-        editBtn.addEventListener('click', allowEditing);
+        editBtn.addEventListener('click', enableEditing);
     };
 
-    const allowEditing = () => {
+    const enableEditing = () => {
         shipQueue = JSON.parse(JSON.stringify(shipData));
         player.getBoard().restartBoard();
         screenController.showPrompt();
@@ -58,6 +58,7 @@ const screen = (() => {
         startShipPlacement(shipQueue);
     };
 
+    // long ass function
     const startShipPlacement = (ship) => {
         const tiles = document.querySelectorAll('.editContainer > div');
         const axisBtn = document.querySelector('.changeAxis');
@@ -92,52 +93,46 @@ const screen = (() => {
             });
 
             tile.addEventListener('click', () => {
-                const x = +tile.dataset.row;
-                const y = +tile.dataset.col;
-                const newShip = new Ship(shipName, shipLength);
-                let canBePlaced = false;
-
-                if (direction === 'X') {
-                    const coordinates = player
-                        .getBoard()
-                        .getCoordinatesX(x, y, shipLength);
-
-                    if (
-                        !player.getBoard().isOutOfBounds(x, shipLength - 1) &&
-                        !player.getBoard().isAlreadyTaken(coordinates)
-                    ) {
-                        player.getBoard().placeShipX(newShip, x, y);
-                        canBePlaced = true;
-                    }
-                } else if (direction === 'Y') {
-                    const coordinates = player
-                        .getBoard()
-                        .getCoordinatesY(x, y, shipLength);
-
-                    if (
-                        !player.getBoard().isOutOfBounds(y, shipLength - 1) &&
-                        !player.getBoard().isAlreadyTaken(coordinates)
-                    ) {
-                        player.getBoard().placeShipY(newShip, x, y);
-                        canBePlaced = true;
-                    }
-                } else {
-                    canBePlaced = false;
-                }
-
-                if (canBePlaced) {
-                    // rerender the board after placing a ship
-                    renderBoard(player.getBoard().board, editContainer);
-                    screenController.showShips(editContainer);
-                    // removing the first element since it was already placed
-                    if (shipQueue.length > 1) {
-                        shipQueue.shift();
-                        // restarting the eventlisteners for placements
-                        startShipPlacement(shipQueue);
-                    }
-                }
+                shipPlacementHandler(direction, shipName, shipLength, tile);
             });
         });
+    };
+
+    const shipPlacementHandler = (direction, shipName, shipLength, tile) => {
+        const x = +tile.dataset.row;
+        const y = +tile.dataset.col;
+        const newShip = new Ship(shipName, shipLength);
+        let shipPlaced = false;
+
+        if (direction === 'X') {
+            // get the coordinates based on the axis
+            const coords = player.getBoard().getCoordinatesX(x, y, shipLength);
+
+            // then check its validity, if true then we proceed to place that ship there
+            if (isPlaceable(x, y, direction, shipLength, coords)) {
+                player.getBoard().placeShipX(newShip, x, y);
+                shipPlaced = true;
+            }
+        } else if (direction === 'Y') {
+            const coords = player.getBoard().getCoordinatesY(x, y, shipLength);
+
+            if (isPlaceable(x, y, direction, shipLength, coords)) {
+                player.getBoard().placeShipY(newShip, x, y);
+                shipPlaced = true;
+            }
+        }
+        // we do this so that we only excecute this code if the ship was placed
+        if (shipPlaced) {
+            // rerender the board after placing a ship
+            renderBoard(player.getBoard().board, editContainer);
+            screenController.showShips(editContainer);
+            // removing the first element since it was already placed
+            if (shipQueue.length > 1) {
+                shipQueue.shift();
+                // restarting the eventlisteners for placements
+                startShipPlacement(shipQueue);
+            }
+        }
     };
 
     const showPlacementPreview = (x, y, length, axis) => {
@@ -146,6 +141,7 @@ const screen = (() => {
         const xCopy = x;
         const yCopy = y;
 
+        // get the coordinates
         for (let i = 0; i < length; i++) {
             coordinates.push([x, y]);
             if (axis === 'X') {
@@ -156,21 +152,34 @@ const screen = (() => {
         }
 
         screenController.clearTileClasses(tiles, 'hasShip');
-        if (axis === 'X' && player.getBoard().isOutOfBounds(xCopy, length - 1))
-            return;
-        if (axis === 'Y' && player.getBoard().isOutOfBounds(yCopy, length - 1))
-            return;
+        screenController.clearTileClasses(tiles, 'warning');
+
+        let placeable = isPlaceable(xCopy, yCopy, axis, length, coordinates);
 
         coordinates.forEach((coord) => {
             const [row, col] = coord;
 
             tiles.forEach((tile) => {
-                if (row === +tile.dataset.row && col === +tile.dataset.col) {
+                const hasSameCoordinate = row === +tile.dataset.row && col === +tile.dataset.col;
+                const hasShip = tile.classList.contains('hasShip');
+
+                if (hasSameCoordinate && placeable) {
                     tile.classList.add('hasShip');
+                } else if (hasSameCoordinate && !placeable && !hasShip) {
+                    tile.classList.add('warning');
                 }
             });
         });
     };
+
+    const isPlaceable = (x, y, axis, length, coordinates) => {
+        const outOfBoundsX = axis === 'X' && player.getBoard().isOutOfBounds(x, length - 1);
+        const outOfBoundsY = axis === 'Y' && player.getBoard().isOutOfBounds(y, length - 1);
+        const alreadyTaken = player.getBoard().isAlreadyTaken(coordinates);
+
+        if (outOfBoundsX || outOfBoundsY || alreadyTaken) return false;
+        return true;
+    }
 
     const startBattle = () => {
         initializePlayerAttack();
