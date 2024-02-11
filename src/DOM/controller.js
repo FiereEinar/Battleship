@@ -36,6 +36,10 @@ const screenController = (() => {
         });
     };
 
+    const showSubmitWarning = () => {
+        document.querySelector('.warning').innerHTML = 'Please ensure that you placed all your ships and entered your name';
+    };
+
     const enableClickEvent = () => {
         document.querySelector('.computerBoard').style.pointerEvents = 'auto';
     };
@@ -89,6 +93,7 @@ const screenController = (() => {
         clearTileClasses,
         hidePrompt,
         showPrompt,
+        showSubmitWarning,
     };
 })();
 

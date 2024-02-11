@@ -5,6 +5,7 @@ export default class Gameboard {
     constructor() {
         this.board = this.fillBoard();
         this.aliveShips = [];
+        // TODO: use a Set();
         this.takenSpots = [];
     }
 

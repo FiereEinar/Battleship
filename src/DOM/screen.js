@@ -14,7 +14,6 @@ const screen = (() => {
     const start = () => {
         const submit = document.querySelector('.submitPrompt');
         const input = document.querySelector('#name');
-        // TODO: bug: the user is able to submit the prompt when editing and it ends up clearing the board
         // TODO: replace the text at the bottom if the user submits without filling the name or placing all the ships
         allowEditing();
 
@@ -22,6 +21,8 @@ const screen = (() => {
             if (input.value.length !== 0 && shipQueue.length === 1) {
                 initializeGame(input.value);
                 screenController.hidePrompt();
+            } else {
+                screenController.showSubmitWarning();
             }
         });
     };
@@ -59,12 +60,21 @@ const screen = (() => {
 
     const startShipPlacement = (ship) => {
         const tiles = document.querySelectorAll('.editContainer > div');
+        const axisBtn = document.querySelector('.changeAxis');
         const shipLength = ship[0][1];
         const shipName = ship[0][0];
         let direction = 'X';
 
         window.addEventListener('keydown', (e) => {
             if (e.key === ' ' && direction === 'X') {
+                direction = 'Y';
+            } else {
+                direction = 'X';
+            }
+        });
+
+        axisBtn.addEventListener('click', () => {
+            if (direction === 'X') {
                 direction = 'Y';
             } else {
                 direction = 'X';

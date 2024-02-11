@@ -1,3 +1,12 @@
+:root {
+    --primary-dark: #333;
+    --primary-light: #fff;
+    --secondary-light: #ddd;
+    --danger: lightcoral;
+    --ocean: lightblue;
+    --miss: lightgrey;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -8,16 +17,21 @@
 body {
     position: relative;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--secondary-light);
 }
 
 header {
     text-align: center;
-    padding: 15px;
+    padding: 20px;
+    background-color: var(--primary-dark);
+    color: var(--primary-light);
 }
 
 .container {
     width: 100%;
-    min-height: 100%;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -42,6 +56,10 @@ header {
 
 .playerContainer > .controls > button {
     width: 80px;
+    padding: 3px 20px;
+    border: 1px solid;
+    border-radius: 5px;
+    background-color: var(--primary-light);
     cursor: pointer;
 }
 
@@ -69,7 +87,7 @@ header {
 .container > div > .playerBoard > .hasShip,
 .container > div > .computerBoard > .hasShip,
 .editContainer > .hasShip {
-    background-color: lightblue;
+    background-color: var(--ocean);
 }
 
 .playerBoard,
@@ -85,16 +103,16 @@ header {
     border: 1px solid;
     width: 33px;
     height: 33px;
-    background-color: #fff;
+    background-color: var(--primary-light);
 }
 
 .container > div > .computerBoard > .discovered,
 .container > div > .playerBoard > .discovered {
-    background-color: lightgrey;
+    background-color: var(--miss);
 }
 .container > div > .computerBoard > .shipHit,
 .container > div > .playerBoard > .shipHit {
-    background-color: lightcoral;
+    background-color: var(--danger);
 }
 
 /* <-------------------------> */
@@ -118,7 +136,7 @@ header {
 }
 
 .promtContainer {
-    background-color: #e0e0e0;
+    background-color: var(--secondary-light);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -128,7 +146,7 @@ header {
     background: linear-gradient(145deg, #f0f0f0, #cacaca);
     box-shadow:
         35px 35px 49px #afafaf,
-        -35px -35px 49px #ffffff;
+        -35px -35px 49px #c7c7c7;
     gap: 10px;
 }
 
@@ -152,6 +170,12 @@ header {
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+}
+
+.ships-drag > p {
+    width: 340px;
+    text-align: center;
+    text-wrap: wrap;
 }
 
 .componentContainer {
@@ -179,10 +203,32 @@ header {
     border: 1px solid;
     width: 33px;
     height: 33px;
-    background-color: #fff;
+    background-color: var(--primary-light);
 }
 
 /* <-------------------------> */
+
+footer {
+    height: 10vh;
+    display: flex;
+    font-size: 0.8rem;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    gap: 10px;
+}
+
+footer a img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: all 1s ease;
+}
+
+footer a img:hover {
+    transform: rotate(720deg);
+}
 
 /* 
 @media (max-width: 600px) {
