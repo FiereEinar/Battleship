@@ -6,7 +6,7 @@ export default class Gameboard {
         this.board = this.fillBoard();
         this.aliveShips = [];
         // TODO: use a Set();
-        this.takenSpots = [];
+        this.takenSpots = new Set();
     }
 
     fillBoard() {
@@ -33,6 +33,10 @@ export default class Gameboard {
     getTileAt(x, y) {
         return this.board[x][y];
     }
+    
+    getSpots() {
+        return this.takenSpots;
+    }
 
     getCoordinatesX(x, y, length) {
         const coords = [];
@@ -58,16 +62,45 @@ export default class Gameboard {
         coords.forEach((coord) => {
             const [x, y] = coord;
             this.board[x][y].setShip(ship.getName());
-            this.takenSpots.push([x, y]);
+            this.addSorroundingTiles(x, y);
         });
         this.aliveShips.push(ship);
     }
+    
+    addSorroundingTiles(x, y) {
+        const tiles = this.getSorroundingTiles(x, y);
+        
+        tiles.forEach((tile) => {
+            const [row, col] = tile;
+            this.getSpots().add(`${row}-${col}`);
+        });
+    }
+    
+    getSorroundingTiles(x, y) {
+        const tiles = [[x, y]];
+        const coordinates = [
+            [1, 0],
+            [0, 1],
+            [1, 1],
+            [-1, 0],
+            [0, -1],
+            [-1, 1],
+            [1, -1],
+            [-1, -1],
+        ];
+        
+        coordinates.forEach((coords) => {
+            const [row, col] = coords;
+            
+            if (!this.getSpots().has(`${x + row}-${y + col}`)) {
+                tiles.push([x + row, y + col]);
+            }
+        });
+        return tiles;
+    }
 
     placeShipX(ship, argX, argY) {
-        let x;
-        let y;
-        let xCopy; // copy is passed to the isOutOfbounds() because x is being decremented
-        let coordinates;
+        let x, y, coordinates;
 
         if (
             (argX === undefined && argY === undefined) ||
@@ -78,35 +111,22 @@ export default class Gameboard {
                 x = getRandomNum(10);
                 y = getRandomNum(10);
 
-                coordinates = [];
-                xCopy = x;
+                coordinates = this.getCoordinatesX(x, y, ship.shipLength);
                 // then we get the coordinates and pass it to the isAlreadyTaken funcion
                 // to check if it's taken
-                for (let i = 0; i < ship.shipLength; i++) {
-                    coordinates.push([x, y]);
-                    x--;
-                }
             } while (
-                this.isOutOfBounds(xCopy, ship.shipLength) ||
+                this.isOutOfBounds(x, ship.shipLength) ||
                 this.isAlreadyTaken(coordinates)
             );
         } else {
-            coordinates = [];
-
-            for (let i = 0; i < ship.shipLength; i++) {
-                coordinates.push([argX, argY]);
-                argX--;
-            }
+            coordinates = this.getCoordinatesX(argX, argY, ship.shipLength);
         }
 
         this.placeShip(coordinates, ship);
     }
 
     placeShipY(ship, argX, argY) {
-        let x = argX;
-        let y = argY;
-        let yCopy; // copy is passed to the isOutOfbounds() because x is being decremented
-        let coordinates;
+        let x, y, coordinates;
 
         if (
             (argX === undefined && argY === undefined) ||
@@ -116,24 +136,13 @@ export default class Gameboard {
                 x = getRandomNum(10);
                 y = getRandomNum(10);
 
-                coordinates = [];
-                yCopy = y;
-
-                for (let i = 0; i < ship.shipLength; i++) {
-                    coordinates.push([x, y]);
-                    y--;
-                }
+                coordinates = this.getCoordinatesY(x, y, ship.shipLength);
             } while (
-                this.isOutOfBounds(yCopy, ship.shipLength) ||
+                this.isOutOfBounds(y, ship.shipLength) ||
                 this.isAlreadyTaken(coordinates)
             );
         } else {
-            coordinates = [];
-
-            for (let i = 0; i < ship.shipLength; i++) {
-                coordinates.push([argX, argY]);
-                argY--;
-            }
+            coordinates = this.getCoordinatesY(argX, argY, ship.shipLength);
         }
 
         this.placeShip(coordinates, ship);
@@ -141,12 +150,10 @@ export default class Gameboard {
 
     isAlreadyTaken(coords) {
         let isTaken = false;
-        this.takenSpots.forEach((spot) => {
-            const [row, col] = spot;
-            coords.forEach((coord) => {
-                const [x, y] = coord;
-                if (row === x && col === y) isTaken = true;
-            });
+        
+        coords.forEach((coord) => {
+            const [x, y] = coord;
+            if (this.getSpots().has(`${x}-${y}`)) isTaken = true;
         });
         return isTaken;
     }
@@ -176,6 +183,6 @@ export default class Gameboard {
     restartBoard() {
         this.board = this.fillBoard();
         this.aliveShips = [];
-        this.takenSpots = [];
+        this.takenSpots = new Set();
     }
 }

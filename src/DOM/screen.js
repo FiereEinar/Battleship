@@ -30,9 +30,6 @@ const screen = (() => {
     const initializeGame = (playerName) => {
         const playerContainer = document.querySelector('.playerBoard');
         const computerContainer = document.querySelector('.computerBoard');
-        const shuffleBtn = document.querySelector('.shuffle');
-        const startBtn = document.querySelector('.start');
-        const editBtn = document.querySelector('.edit');
 
         screenController.setPlayerName(playerName);
         player.setPlayerName(playerName);
@@ -43,10 +40,7 @@ const screen = (() => {
 
         screenController.showControls();
         screenController.showShips(playerContainer);
-
-        shuffleBtn.addEventListener('click', shufflePlayerTiles);
-        startBtn.addEventListener('click', startBattle);
-        editBtn.addEventListener('click', enableEditing);
+        activateControls();
     };
 
     const enableEditing = () => {
@@ -56,6 +50,16 @@ const screen = (() => {
 
         renderBoard(player.getBoard().board, editContainer);
         startShipPlacement(shipQueue);
+    };
+    
+    const activateControls = () => {
+        const shuffleBtn = document.querySelector('.shuffle');
+        const startBtn = document.querySelector('.start');
+        const editBtn = document.querySelector('.edit');
+        
+        shuffleBtn.addEventListener('click', shufflePlayerTiles);
+        startBtn.addEventListener('click', startBattle);
+        editBtn.addEventListener('click', enableEditing);
     };
 
     // long ass function
