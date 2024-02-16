@@ -4,7 +4,6 @@ import { getRandomNum } from '../js/utils.js';
 export default class Computer extends Player {
     constructor() {
         super();
-        // TODO: use a Set();
         this.previousMoves = [];
     }
 
